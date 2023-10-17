@@ -12,7 +12,10 @@
 
 ## More Info
 ### Install MongoDB 4.2 in Ubuntu 18.04
+<<<<<<< HEAD
 [Official installation guide](https://intranet.alxswe.com/rltoken/8p4x14Ddn1UxKXZ5nPt3zA)
+=======
+>>>>>>> d520c224f8f59be1f19421c8fac21aaa90d52a36
 ```
 $ wget -qO - https://www.mongodb.org/static/pgp/server-4.2.asc | apt-key add -
 $ echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu bionic/mongodb-org/4.2 multiverse" > /etc/apt/sources.list.d/mongodb-org-4.2.list
@@ -38,3 +41,7 @@ $ python3
 >>> pymongo.__version__
 '3.10.1'
 ```
+<<<<<<< HEAD
+=======
+
+>>>>>>> d520c224f8f59be1f19421c8fac21aaa90d52a36
