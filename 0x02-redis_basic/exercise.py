@@ -4,7 +4,22 @@
 
 import redis
 import uuid
-from typing import Union, Callable
+from typing import Union, Callable, Optional
+from functools import wraps
+
+
+def count_calls(method: Callable) -> Callable:
+    """decorator that takes a single method Callable argument
+    and returns a Callable"""
+    key = method.__qualname__
+
+    @wraps(method)
+    def wrapped_method(self, *args, **kwargs):
+        """wrapper method"""
+        self._redis.incr(key)
+        return method(self, *args, **kwargs)
+
+    return wrapped_method
 
 
 class Cache:
@@ -12,6 +27,7 @@ class Cache:
         """stores a private instance"""
         self._redis = redis.Redis(host='localhost', port=6379, db=0)
         self._redis.flushdb()
+        self.call_count = {}
 
     def store(self, data: Union[str, bytes, int, float]) -> str:
         """takes a data argument and returns a string"""
@@ -19,20 +35,25 @@ class Cache:
         self._redis.set(key, data)
         return key
 
-    def get(self, key: str, fn: Callable[[
-        bytes], Union[str, int, float]] = [
-            lambda d:d]) -> Union[str, int, float, bytes]:
+    def get(self, key: str, fn: Optional[
+        Callable] = None) -> Union[str, int, float, bytes]:
         """take a key string argument and an optional Callable
         that will convert the data back to the desired format"""
-        data = self._redis.get(key)
-        if data is not None:
-            return fn(data)
-        return data
+        data_value = self._redis.get(key)
+        if data_value is not None:
+            return fn(data_value)
+        return data_value
 
     def get_str(self, key: str) -> str:
         """parametrize Cache.get with string"""
-        return self.get(key, fn=lambda d: d.decode('utf-8'))
+        data_value = self._redis.get(key)
+        return data_value.decode("utf-8")
 
     def get_int(self, key: str) -> int:
         """parametrize Cache.get with int"""
-        return self.get(key, fn=int)
+        data_value = self._redis.get(key)
+        try:
+            data_value = int(value.decode("utf-8"))
+        except Exception:
+            data_value = 0
+        return data_value
