@@ -58,7 +58,10 @@ def replay(fn: Callable):
 
     print(f"{func_name} was called {len(inputs)} times:")
     for input_args, output in zip(inputs, outputs):
-        print(f"{func_name}(*{eval(input_args.decode('utf-8'))}) -> {output.decode('utf-8')}")
+        print(f"{func_name}(*{eval(input_args.decode(
+                'utf-8'))}) -> {output.decode('utf-8')}")
+
+
 class Cache:
     def __init__(self):
         """stores a private instance"""
@@ -72,8 +75,8 @@ class Cache:
         self._redis.set(key, data)
         return key
 
-    def get(self, key: str, fn: Optional[
-        Callable] = None) -> Union[str, int, float, bytes]:
+    def get(self, key: str, fn: Optional[Callable] = None
+            ) -> Union[str, int, float, bytes]:
         """take a key string argument and an optional Callable
         that will convert the data back to the desired format"""
         data_value = self._redis.get(key)
