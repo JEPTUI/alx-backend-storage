@@ -22,6 +22,26 @@ def count_calls(method: Callable) -> Callable:
     return wrapped_method
 
 
+def call_history(method: Callable) -> Callable:
+    """Appends inputs and outputs to create input
+    and output list keys, respectively."""
+
+    @wraps(method)
+    def wrapped_method(self, *args, **kwargs):
+        """Wrapper method for the decorated function"""
+        method_name = method.__qualname__
+        input_list_key = f"{method_name}:inputs"
+        output_list_key = f"{method_name}:outputs"
+
+        self._redis.rpush(input_list_key, str(args))
+
+        output = method(self, *args, **kwargs)
+        self._redis.rpush(output_list_key, str(output))
+        return output
+
+    return wrapped_method
+
+
 class Cache:
     def __init__(self):
         """stores a private instance"""
